@@ -33,12 +33,12 @@ const App = () => {
               <TouchableWithoutFeedback onPress={toggleTheme}>
                 <View style={styles.button}>
                   <SunIcon
-                    strokeColor={isLightTheme ? '#ff5345' : '#ff5345'}
-                    fillColor={isLightTheme ? '#ff5345' : 'transparent'}
+                    strokeColor={isLightTheme ? '#fff6c2' : '#fff6c2'}
+                    fillColor={isLightTheme ? '#fff6c2' : 'transparent'}
                   />
                   <SunIcon
-                    strokeColor={isLightTheme ? '#215a00' : '#215a00'}
-                    fillColor={isLightTheme ? 'transparent' : '#215a00'}
+                    strokeColor={isLightTheme ? '#9a5031' : '#9a5031'}
+                    fillColor={isLightTheme ? 'transparent' : '#9a5031'}
                   />
                 </View>
               </TouchableWithoutFeedback>
