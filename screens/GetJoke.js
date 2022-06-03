@@ -43,7 +43,6 @@ const GetJoke = ({navigation, route}) => {
     api
       .getJoke(filters)
       .then(data => {
-        console.log(data);
         setJoke({
           joke:
             data.type === 'single'
