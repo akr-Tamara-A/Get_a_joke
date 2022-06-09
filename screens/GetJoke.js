@@ -14,9 +14,13 @@ import CustomModal from '../components/CustomModal';
 import MainButton from '../components/MainButton';
 import SecondaryButton from '../components/SecondaryButton';
 import {data as iconsData} from '../utils/iconsData';
+import {useSelector, useDispatch} from 'react-redux';
+import * as jokeActions from '../store/actions/jokes';
 
 const GetJoke = ({navigation, route}) => {
   const {colors} = useTheme();
+  const savedJokes = useSelector(state => state.savedJokes);
+  const dispatch = useDispatch();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [filters, setFilters] = useState({
@@ -31,10 +35,15 @@ const GetJoke = ({navigation, route}) => {
     blacklistArr: [],
   });
 
-  const [joke, setJoke] = useState({
-    joke: '',
-    flags: '',
-    category: '',
+  const [newJokeData, setNewJokeData] = useState({
+    joke: {
+      text: '',
+      flags: '',
+      category: '',
+      id: '',
+      date: '',
+      saved: false,
+    },
     error: false,
   });
 
@@ -43,15 +52,22 @@ const GetJoke = ({navigation, route}) => {
     api
       .getJoke(filters)
       .then(data => {
-        setJoke({
-          joke:
+        const newJoke = {
+          text:
             data.type === 'single'
               ? '\t\t' + data.joke
               : '\t\t' + data.setup + '\n\t\t' + data.delivery,
           flags: flagsToArray(data.flags),
           category: data.category === 'Misc' ? 'Miscellaneous' : data.category,
+          id: data.id,
+          saved: checkIfSaved(data.id),
+          date: new Date(),
+        };
+        setNewJokeData({
+          joke: newJoke,
           error: data.error,
         });
+        dispatch(jokeActions.updateLatestJokes(newJoke));
       })
       .catch(err => console.log(err));
   };
@@ -65,6 +81,20 @@ const GetJoke = ({navigation, route}) => {
       }
     }
     return flagsArr;
+  };
+
+  /** */
+  const checkIfSaved = id => {
+    let isSaved = false;
+
+    if (savedJokes.length > 0) {
+      for (let elem of savedJokes) {
+        if (elem.id === id) {
+          isSaved = true;
+        }
+      }
+    }
+    return isSaved;
   };
 
   /** */
@@ -135,11 +165,16 @@ const GetJoke = ({navigation, route}) => {
           <View style={styles.jokeBlock}>
             <View>
               <View style={styles.flags}>
-                <Image style={styles.icon} source={iconsData[joke.category]} />
-                <Text style={styles.categoryText}>{joke.category}</Text>
+                <Image
+                  style={styles.icon}
+                  source={iconsData[newJokeData.joke.category]}
+                />
+                <Text style={styles.categoryText}>
+                  {newJokeData.joke.category}
+                </Text>
               </View>
               <FlatList
-                data={joke.flags}
+                data={newJokeData.joke.flags}
                 keyExtractor={item => item}
                 renderItem={({item}) => (
                   <Text style={styles.flagText}>{item}</Text>
@@ -148,8 +183,22 @@ const GetJoke = ({navigation, route}) => {
                 horizontal
               />
             </View>
-            <Text style={styles.text}>{joke.joke}</Text>
-            <SecondaryButton text="Save" onPress={() => {}} />
+            <Text style={styles.text}>{newJokeData.joke.text}</Text>
+            <SecondaryButton
+              text="Save"
+              disabled={newJokeData.joke.saved}
+              onPress={() => {
+                dispatch(
+                  jokeActions.addJokeToSaved({
+                    text: newJokeData.joke.text,
+                    category: newJokeData.joke.category,
+                    flags: newJokeData.joke.flags,
+                    id: newJokeData.joke.id,
+                    date: newJokeData.joke.date,
+                  }),
+                );
+              }}
+            />
           </View>
         </View>
       </ScrollView>

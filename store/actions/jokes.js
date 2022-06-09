@@ -31,6 +31,7 @@ export const addJokeToSaved = data => {
       category: data.category,
       flags: data.flags,
       id: data.id,
+      date: data.date,
     },
   };
 };
