@@ -22,7 +22,9 @@ const jokesReducer = (state = initialState, action) => {
 
     case UPDATE_LATEST_JOKES:
       const prevLatestJokes = [...state.latestJokes];
-      prevLatestJokes.pop();
+      if (prevLatestJokes.length > 100) {
+        prevLatestJokes.pop();
+      }
       const newLatestJokes = [action.newJoke, ...prevLatestJokes];
       storeData(KEYSLATEST, newLatestJokes);
       return {...state, latestJokes: newLatestJokes};
