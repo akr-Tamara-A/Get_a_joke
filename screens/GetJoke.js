@@ -37,14 +37,7 @@ const GetJoke = ({navigation, route}) => {
   });
 
   const [newJokeData, setNewJokeData] = useState({
-    joke: {
-      text: '',
-      flags: '',
-      category: '',
-      id: '',
-      date: '',
-      saved: false,
-    },
+    joke: {},
     error: false,
   });
 
@@ -65,12 +58,18 @@ const GetJoke = ({navigation, route}) => {
           date: formatDate(new Date()),
         };
         setNewJokeData({
+          error: false,
           joke: newJoke,
-          error: data.error,
         });
         dispatch(jokeActions.updateLatestJokes(newJoke));
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        console.log(err);
+        setNewJokeData({
+          joke: null,
+          error: true,
+        });
+      });
   };
 
   /** */
@@ -176,34 +175,41 @@ const GetJoke = ({navigation, route}) => {
             }}
           />
           <MainButton text="Get joke" onPress={handleGetJoke} />
-          <View style={styles.jokeBlock}>
-            <View>
-              <View style={styles.flags}>
-                <Image
-                  style={styles.icon}
-                  source={iconsData[newJokeData.joke.category]}
+          {newJokeData.joke && Object.keys(newJokeData.joke).length > 0 && (
+            <View style={styles.jokeBlock}>
+              <View>
+                <View style={styles.flags}>
+                  <Image
+                    style={styles.icon}
+                    source={iconsData[newJokeData.joke.category]}
+                  />
+                  <Text style={styles.categoryText}>
+                    {newJokeData.joke.category}
+                  </Text>
+                </View>
+                <FlatList
+                  data={newJokeData.joke.flags}
+                  keyExtractor={item => item}
+                  renderItem={({item}) => (
+                    <Text style={styles.flagText}>{item}</Text>
+                  )}
+                  contentContainerStyle={styles.flags}
+                  horizontal
                 />
-                <Text style={styles.categoryText}>
-                  {newJokeData.joke.category}
-                </Text>
               </View>
-              <FlatList
-                data={newJokeData.joke.flags}
-                keyExtractor={item => item}
-                renderItem={({item}) => (
-                  <Text style={styles.flagText}>{item}</Text>
-                )}
-                contentContainerStyle={styles.flags}
-                horizontal
+              <Text style={styles.text}>{newJokeData.joke.text}</Text>
+              <SecondaryButton
+                text={newJokeData.saved ? 'Remove' : 'Save'}
+                disabled={newJokeData.joke.saved}
+                onPress={() => handleSaveJoke(newJokeData.joke)}
               />
             </View>
-            <Text style={styles.text}>{newJokeData.joke.text}</Text>
-            <SecondaryButton
-              text={newJokeData.saved ? 'Remove' : 'Save'}
-              disabled={newJokeData.joke.saved}
-              onPress={() => handleSaveJoke(newJokeData.joke)}
-            />
-          </View>
+          )}
+          {newJokeData.error && (
+            <View style={styles.jokeBlock}>
+              <Text style={styles.categoryText}>Some error occured!</Text>
+            </View>
+          )}
         </View>
       </ScrollView>
       <CustomModal
