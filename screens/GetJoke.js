@@ -16,6 +16,7 @@ import SecondaryButton from '../components/SecondaryButton';
 import {data as iconsData} from '../utils/iconsData';
 import {useSelector, useDispatch} from 'react-redux';
 import * as jokeActions from '../store/actions/jokes';
+import {formatDate} from '../utils/utils';
 
 const GetJoke = ({navigation, route}) => {
   const {colors} = useTheme();
@@ -61,7 +62,7 @@ const GetJoke = ({navigation, route}) => {
           category: data.category === 'Misc' ? 'Miscellaneous' : data.category,
           id: data.id,
           saved: checkIfSaved(data.id),
-          date: new Date(),
+          date: formatDate(new Date()),
         };
         setNewJokeData({
           joke: newJoke,
@@ -70,6 +71,19 @@ const GetJoke = ({navigation, route}) => {
         dispatch(jokeActions.updateLatestJokes(newJoke));
       })
       .catch(err => console.log(err));
+  };
+
+  /** */
+  const handleSaveJoke = data => {
+    const savedJoke = {
+      text: data.text,
+      category: data.category,
+      flags: data.flags,
+      id: data.id,
+      date: data.date,
+      saved: true,
+    };
+    dispatch(jokeActions.addJokeToSaved(savedJoke));
   };
 
   /** */
@@ -185,19 +199,9 @@ const GetJoke = ({navigation, route}) => {
             </View>
             <Text style={styles.text}>{newJokeData.joke.text}</Text>
             <SecondaryButton
-              text="Save"
+              text={newJokeData.saved ? 'Remove' : 'Save'}
               disabled={newJokeData.joke.saved}
-              onPress={() => {
-                dispatch(
-                  jokeActions.addJokeToSaved({
-                    text: newJokeData.joke.text,
-                    category: newJokeData.joke.category,
-                    flags: newJokeData.joke.flags,
-                    id: newJokeData.joke.id,
-                    date: newJokeData.joke.date,
-                  }),
-                );
-              }}
+              onPress={() => handleSaveJoke(newJokeData.joke)}
             />
           </View>
         </View>
