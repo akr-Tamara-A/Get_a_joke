@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, TouchableOpacity, Text} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 
-const SecondaryButton = ({text, onPress}) => {
+const SecondaryButton = ({text, disabled, onPress}) => {
   const {colors} = useTheme();
   const styles = StyleSheet.create({
     button: {
@@ -27,7 +27,10 @@ const SecondaryButton = ({text, onPress}) => {
   });
 
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
+    <TouchableOpacity
+      style={styles.button}
+      disabled={disabled}
+      onPress={onPress}>
       <Text style={styles.text}>{text}</Text>
     </TouchableOpacity>
   );
