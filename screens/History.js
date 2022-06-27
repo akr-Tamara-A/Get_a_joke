@@ -11,6 +11,9 @@ const History = ({navigation, route}) => {
   const latestJokes = useSelector(state => {
     return state.latestJokes;
   });
+  const savedJokes = useSelector(state => {
+    return state.savedJokes;
+  });
 
   const styles = StyleSheet.create({
     screen: {
@@ -52,7 +55,12 @@ const History = ({navigation, route}) => {
           data={latestJokes}
           style={styles.scrollView}
           keyExtractor={(item, index) => index}
-          renderItem={({item}) => <JokeItem data={item} />}
+          renderItem={({item}) => (
+            <JokeItem
+              data={item}
+              saved={savedJokes.find(joke => joke.id === item.id)}
+            />
+          )}
           ListEmptyComponent={ListEmptyComponent}
         />
       </View>

@@ -38,6 +38,7 @@ const GetJoke = ({navigation, route}) => {
 
   const [newJokeData, setNewJokeData] = useState({
     joke: {},
+    isSaved: false,
     error: false,
   });
 
@@ -54,18 +55,19 @@ const GetJoke = ({navigation, route}) => {
           flags: flagsToArray(data.flags),
           category: data.category === 'Misc' ? 'Miscellaneous' : data.category,
           id: data.id,
-          saved: checkIfSaved(data.id),
           date: formatDate(new Date()),
         };
         setNewJokeData({
-          error: false,
           joke: newJoke,
+          isSaved: checkIfSaved(data.id),
+          error: false,
         });
         dispatch(jokeActions.updateLatestJokes(newJoke));
       })
       .catch(err => {
         console.log(err);
         setNewJokeData({
+          ...newJokeData,
           joke: null,
           error: true,
         });
@@ -73,16 +75,21 @@ const GetJoke = ({navigation, route}) => {
   };
 
   /** */
-  const handleSaveJoke = data => {
-    const savedJoke = {
-      text: data.text,
-      category: data.category,
-      flags: data.flags,
-      id: data.id,
-      date: data.date,
-      saved: true,
-    };
-    dispatch(jokeActions.addJokeToSaved(savedJoke));
+  const handleSaveJoke = () => {
+    dispatch(jokeActions.addJokeToSaved(newJokeData.joke));
+    setNewJokeData({
+      ...newJokeData,
+      isSaved: true,
+    });
+  };
+
+  /** */
+  const handleDeleteJoke = () => {
+    dispatch(jokeActions.deleteJokeFromSaved(newJokeData.joke.id));
+    setNewJokeData({
+      ...newJokeData,
+      isSaved: false,
+    });
   };
 
   /** */
@@ -199,9 +206,10 @@ const GetJoke = ({navigation, route}) => {
               </View>
               <Text style={styles.text}>{newJokeData.joke.text}</Text>
               <SecondaryButton
-                text={newJokeData.saved ? 'Remove' : 'Save'}
-                disabled={newJokeData.joke.saved}
-                onPress={() => handleSaveJoke(newJokeData.joke)}
+                text={newJokeData.isSaved ? 'Remove' : 'Save'}
+                onPress={() =>
+                  newJokeData.isSaved ? handleDeleteJoke() : handleSaveJoke()
+                }
               />
             </View>
           )}

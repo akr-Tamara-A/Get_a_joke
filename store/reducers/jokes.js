@@ -38,25 +38,26 @@ const jokesReducer = (state = initialState, action) => {
       if (prevLatestJokes.length >= 100) {
         prevLatestJokes.pop();
       }
-      const newLatestJokes = [action.newJoke, ...prevLatestJokes];
-
-      asyncStorageApi.storeData(KEYSLATEST, newLatestJokes);
-      return {...state, latestJokes: newLatestJokes};
+      asyncStorageApi.storeData(KEYSLATEST, [
+        action.newJoke,
+        ...prevLatestJokes,
+      ]);
+      return {...state, latestJokes: [action.newJoke, ...prevLatestJokes]};
 
     case ADD_JOKE_TO_SAVED:
-      const newSavedJokes = [action.joke, ...state.savedJokes];
-      asyncStorageApi.storeData(KEYSSAVED, newSavedJokes);
-      return {...state, savedJokes: newSavedJokes};
+      const arr1 = [...state.savedJokes];
+      const arr2 = [action.savedJoke, ...arr1];
+      asyncStorageApi.storeData(KEYSSAVED, arr2);
+      return {
+        ...state,
+        savedJokes: arr2,
+      };
 
     case DELETE_JOKE_FROM_SAVED:
-      const jokeIndex = state.savedJokes.findIndex(
-        joke => joke.id === action.id,
-      );
-      if (jokeIndex > -1) {
-        const updatedSavedJokes = [...state.savedJokes];
-        updatedSavedJokes.splice(jokeIndex, 1);
-        return {...state, savedJokes: updatedSavedJokes};
-      }
+      return {
+        ...state,
+        savedJokes: state.savedJokes.filter(joke => joke.id !== action.id),
+      };
   }
   return state;
 };

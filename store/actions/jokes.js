@@ -44,10 +44,10 @@ export const getSavedJokes = () => {
   };
 };
 
-export const addJokeToSaved = data => {
+export const addJokeToSaved = savedJoke => {
   return {
     type: ADD_JOKE_TO_SAVED,
-    joke: data,
+    savedJoke: savedJoke,
   };
 };
 

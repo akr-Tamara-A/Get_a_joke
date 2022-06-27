@@ -2,9 +2,12 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {useTheme} from '@react-navigation/native';
 import SecondaryButton from './SecondaryButton';
+import {useDispatch} from 'react-redux';
+import * as jokeActions from '../store/actions/jokes';
 
-const JokeItem = ({data}) => {
+const JokeItem = ({data, saved}) => {
   const {colors} = useTheme();
+  const dispatch = useDispatch();
 
   const styles = StyleSheet.create({
     view: {
@@ -42,11 +45,14 @@ const JokeItem = ({data}) => {
       <Text style={styles.category}>Category: {data.category}</Text>
       <Text style={styles.flags}>{data.flags.join('  ')}</Text>
       <Text style={styles.text}>{data.text}</Text>
-      <Text style={styles.category}>{data.saved}</Text>
       <SecondaryButton
-        text={data.saved ? 'Remove' : 'Save'}
+        text={saved ? 'Remove' : 'Save'}
         disabled={false}
-        onPress={() => {}}
+        onPress={() =>
+          saved
+            ? dispatch(jokeActions.deleteJokeFromSaved(data.id))
+            : dispatch(jokeActions.addJokeToSaved(data))
+        }
       />
     </View>
   );

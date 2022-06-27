@@ -52,7 +52,7 @@ const Favorites = ({navigation, route}) => {
           data={savedJokes}
           style={styles.scrollView}
           keyExtractor={(item, index) => index}
-          renderItem={({item}) => <JokeItem data={item} />}
+          renderItem={({item}) => <JokeItem data={item} saved={true} />}
           ListEmptyComponent={ListEmptyComponent}
         />
       </View>
